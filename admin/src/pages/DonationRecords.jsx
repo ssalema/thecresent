@@ -25,7 +25,6 @@ import DonationReceipt, {
 } from "../components/DonationReceipt";
 import MessageDialog from "../components/MessageDialog";
 import {
-  Badge,
   Button,
   Card,
   CardRow,
@@ -60,7 +59,6 @@ const COLUMNS = [
   { key: "name", label: "Donor" },
   { key: "mobile", label: "Mobile" },
   { key: "amount", label: "Amount" },
-  { key: "type", label: "Type" },
   { key: "date", label: "Date" },
   { key: "payment", label: "Payment ID" },
   { key: "actions", label: "Actions", className: "w-32" },
@@ -68,7 +66,6 @@ const COLUMNS = [
 
 const EMPTY_FILTERS = {
   search: "",
-  type: "",
   ...EMPTY_PERIOD,
   sort: "newest",
 };
@@ -100,16 +97,12 @@ const waitForImages = async (node) => {
  *   - The ₹ total in the header is summed by Mongo across everything matching
  *     the filters, and arrives as `totalAmount`. It cannot be added up from the
  *     rows on screen, because those are one page of the answer.
- *   - The type filter's options come from their own endpoint, for the same
- *     reason: the distinct funds are a property of the collection, not of the
- *     twenty-five rows currently loaded.
  */
 const DonationRecords = () => {
   const organization = useOrganization();
   const [donations, setDonations] = useState([]);
   const [total, setTotal] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   // Distinguishes "no donations at all" from "nothing matches these filters".
   const [recordsEmpty, setRecordsEmpty] = useState(false);
@@ -130,25 +123,13 @@ const DonationRecords = () => {
 
   // Typing is not a query. Everything else applies as soon as it is picked.
   const search = useDebounced(filters.search);
-  const { type, period, from, to, sort } = filters;
+  const { period, from, to, sort } = filters;
 
   // A narrowed list should always be read from the top — but only when the
   // filters change, not when the page does.
   useEffect(() => {
     resetPage();
-  }, [search, type, period, from, to, sort, resetPage]);
-
-  // The funds present in the records, whatever the donate form offers today —
-  // a retired fund must stay filterable. Loaded once; the set only changes when
-  // a donation of a brand-new type arrives.
-  useEffect(() => {
-    api
-      .get('/donations/types')
-      .then((res) => setTypes(res.data))
-      // A missing filter dropdown is not worth a dialog over: the records
-      // themselves still load, and every other filter still works.
-      .catch((err) => console.error("Error fetching donation types:", err));
-  }, []);
+  }, [search, period, from, to, sort, resetPage]);
 
   // Responses can arrive out of order once a search is being typed. Only the
   // newest request is allowed to write to state.
@@ -167,7 +148,6 @@ const DonationRecords = () => {
           limit: rowsPerPage,
           sort,
           ...(search.trim() ? { search: search.trim() } : {}),
-          ...(type ? { type } : {}),
           ...(range.from ? { from: range.from } : {}),
           ...(range.to ? { to: range.to } : {}),
         },
@@ -196,7 +176,7 @@ const DonationRecords = () => {
       });
     // `filtersActive` is derived from the filters already listed here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, type, period, from, to, sort, page, rowsPerPage]);
+  }, [search, period, from, to, sort, page, rowsPerPage]);
 
   // Rendering the receipt is a state change, so the download runs from an
   // effect once the off-screen node for `pdfDonation` is actually in the DOM.
@@ -270,7 +250,7 @@ const DonationRecords = () => {
     if (!donation) return;
     const lines = [
       `Hello ${donation.name},`,
-      `Thank you for your donation of ${donation.amount} (${donation.type}).`,
+      `Thank you for your donation of ${donation.amount}.`,
     ];
     if (organization.organizationName) {
       lines.push(`Organization: ${organization.organizationName}`);
@@ -327,20 +307,6 @@ const DonationRecords = () => {
                   onChange={(e) => setFilter("search", e.target.value)}
                 />
               </FilterField>
-              <FilterField label="Donation Type" htmlFor="donation-type">
-                <FilterSelect
-                  id="donation-type"
-                  value={filters.type}
-                  onChange={(e) => setFilter("type", e.target.value)}
-                >
-                  <option value="">All Types</option>
-                  {types.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </FilterSelect>
-              </FilterField>
               <FilterField label="Date" htmlFor="donation-period">
                 <FilterSelect
                   id="donation-period"
@@ -384,7 +350,7 @@ const DonationRecords = () => {
               <EmptyState
                 icon={FaSearch}
                 title="No matching donations"
-                message="No donation matches these filters. Try a different search, type or date range."
+                message="No donation matches these filters. Try a different search or date range."
                 action={
                   <Button
                     variant="secondary"
@@ -405,9 +371,6 @@ const DonationRecords = () => {
                         <Td className="whitespace-nowrap">{d.mobile}</Td>
                         <Td className="whitespace-nowrap font-semibold text-gray-900">
                           ₹{Number(d.amount).toLocaleString("en-IN")}
-                        </Td>
-                        <Td>
-                          <Badge tone="blue">{d.type}</Badge>
                         </Td>
                         <Td className="whitespace-nowrap text-gray-500">
                           {new Date(d.createdAt).toLocaleString()}
@@ -455,9 +418,6 @@ const DonationRecords = () => {
                       </div>
                       <div className="mt-2 space-y-1">
                         <CardRow label="Mobile">{d.mobile}</CardRow>
-                        <CardRow label="Type">
-                          <Badge tone="blue">{d.type}</Badge>
-                        </CardRow>
                         <CardRow label="Date">
                           {new Date(d.createdAt).toLocaleString()}
                         </CardRow>

@@ -394,7 +394,10 @@ const DonationReceipt = forwardRef(({ donation, organization }, ref) => {
   const isPaid = status === "paid";
   const website = org.websiteUrl ? org.websiteUrl.replace(/^https?:\/\//, "") : "";
   const receiptNo = receiptNumber(donation);
-  const purpose = donation.type || "General Donation";
+  // Every donation is a general contribution now that the funds have been
+  // retired, but the receipt still states a purpose — a receipt that names
+  // none reads as an incomplete document.
+  const purpose = "General Donation";
 
   return (
     <div
@@ -525,7 +528,7 @@ const DonationReceipt = forwardRef(({ donation, organization }, ref) => {
         {/* Contribution details */}
         <div style={{ ...CARD, marginTop: 12 }}>
           <CardHeader icon={LuFileText}>Contribution Details</CardHeader>
-          <Field label="Purpose / Fund" value={purpose} />
+          <Field label="Purpose" value={purpose} />
           <Field label="Payment Mode" value="Online — Razorpay" zebra />
           <Field label="Transaction ID" value={donation.razorpayPaymentId || "—"} />
           <Field label="Order Reference" value={donation.razorpayOrderId || "—"} zebra />

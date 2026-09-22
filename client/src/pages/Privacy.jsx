@@ -10,7 +10,7 @@ import { useOrganization } from "../context/OrganizationContext";
  *
  * The clauses describe what the site actually does — the contact form collects
  * a name, email, phone number and message; the donate form a name, mobile
- * number, amount, fund and an optional note; the payment itself is handled on
+ * number, amount and an optional note; the payment itself is handled on
  * Razorpay's checkout and never touches our servers. Keep this page honest: if
  * a form starts collecting something new, say so here.
  */
@@ -41,7 +41,7 @@ const Privacy = () => {
           {
             list: [
               "Your name and mobile number, for the receipt and for our donation records.",
-              "The amount and the fund you chose to support.",
+              "The amount you chose to give.",
               "An optional note, if you choose to leave one with your contribution.",
               "The reference the payment gateway returns once a payment succeeds or fails.",
             ],

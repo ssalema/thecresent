@@ -52,39 +52,11 @@ export const contactDefaults = { name: '', email: '', number: '', message: '' };
 
 /* ------------------------------------------------------------------ donate */
 
-// Must match the funds the server tracks separately — see DONATION_TYPES there.
-export const DONATION_TYPES = [
-  {
-    value: 'zakat',
-    label: 'Zakat',
-    gist:
-      "The obligatory annual charity — 2.5% of the wealth you have held for a full lunar year. It may only be spent on the eight categories of recipients named in the Qur'an, so we keep it in a separate fund.",
-  },
-  {
-    value: 'fitr',
-    label: 'Fitr',
-    gist:
-      'Zakat al-Fitr — the fixed charity given by every member of a household before the Eid al-Fitr prayer. It must reach those in need in time for Eid, so we distribute it during Ramadan itself.',
-  },
-  {
-    value: 'lillah',
-    label: 'Lillah',
-    gist:
-      'A voluntary gift given purely for the sake of Allah, with no fixed amount or conditions. It funds our general work — education, food, medical aid and running costs.',
-  },
-];
-
-const DONATION_VALUES = DONATION_TYPES.map((type) => type.value);
-
 const MAX_DONATION_RUPEES = 500000;
 
 const MAX_DONATION_MESSAGE = 500;
 
 export const donationSchema = z.object({
-  type: z
-    .string()
-    .min(1, 'Select a donation type')
-    .refine((value) => DONATION_VALUES.includes(value), 'Select a donation type'),
   name: z
     .string()
     .trim()
@@ -130,13 +102,12 @@ export const donationSchema = z.object({
 export const DONATION_PRESETS = [500, 1000, 2500, 5000];
 
 /*
- * The form opens on the first fund and the smallest preset already chosen, so
- * a donor who agrees with both can reach the pay button in two fields. Read
- * from the lists above rather than repeated, so a retired fund or a changed
- * preset cannot leave the form opening on a value it no longer offers.
+ * The form opens on the smallest preset already chosen, so a donor who agrees
+ * with it can reach the pay button in one fewer field. Read from the list
+ * above rather than repeated, so a changed preset cannot leave the form
+ * opening on a value it no longer offers.
  */
 export const donationDefaults = {
-  type: DONATION_TYPES[0].value,
   name: '',
   mobile: '',
   amount: String(DONATION_PRESETS[0]),

@@ -8,7 +8,6 @@ const donationSchema = mongoose.Schema({
   name: { type: String, required: true, trim: true, maxlength: 100 },
   mobile: { type: String, required: true, trim: true, maxlength: 20 },
   amount: { type: Number, required: true, min: 1 }, // Number for amount
-  type: { type: String, required: true, trim: true, maxlength: 40 },
   // Unique: this is the natural key every payment callback and webhook looks a
   // donation up by, and the database is the only place that can actually
   // guarantee two rows never answer to the same order — a retried create-order
@@ -36,8 +35,5 @@ const donationSchema = mongoose.Schema({
  */
 donationSchema.index({ status: 1, createdAt: -1, _id: -1 });
 donationSchema.index({ status: 1, amount: -1, _id: -1 });
-
-// The same, narrowed by the type filter.
-donationSchema.index({ status: 1, type: 1, createdAt: -1, _id: -1 });
 
 export default mongoose.model("Donation", donationSchema);

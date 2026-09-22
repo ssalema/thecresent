@@ -4,7 +4,6 @@ import {
   verifyPayment,
   markPaymentFailed,
   getDonations,
-  getDonationTypes,
 } from "../controllers/donationController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { donationLimiter } from "../config/security.js";
@@ -55,8 +54,5 @@ router.get(
   validate({ query: donationListQuery }),
   getDonations
 );
-
-// The distinct funds present in the records, for the type filter's options.
-router.get("/types", protect, noStore, getDonationTypes);
 
 export default router;

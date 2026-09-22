@@ -62,7 +62,7 @@ const Terms = () => {
         id: "donations",
         title: "Donations",
         body: [
-          `Donations made through this site are voluntary contributions towards the work of ${name}. Where you choose a particular fund or project, we apply your contribution to that purpose. If that project is already fully funded, has closed, or cannot proceed, we will apply your contribution to a comparable programme so the money still reaches the people it was given for.`,
+          `Donations made through this site are voluntary contributions towards the work of ${name}. Where you tell us your contribution is for a particular project, we apply it to that purpose. If that project is already fully funded, has closed, or cannot proceed, we will apply your contribution to a comparable programme so the money still reaches the people it was given for.`,
           "You confirm that the funds you donate are lawfully yours to give, that the payment instrument you use belongs to you or is used with the holder's permission, and that the details you provide are accurate.",
           "Donations, receipts, cancellations and the limited circumstances in which a payment can be refunded are set out in full in our Refund Policy, which forms part of these terms.",
         ],

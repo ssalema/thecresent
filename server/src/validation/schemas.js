@@ -90,10 +90,6 @@ export const contactListQuery = z.object({
 export const donationListQuery = z.object({
   ...listQueryBase,
   sort: sortKey(DONATION_SORTS),
-  // Free text rather than the DONATION_TYPES enum: the records hold whatever
-  // the donate form offered at the time, and an old fund must stay filterable
-  // after it is retired from the form.
-  type: optionalText.refine(atMost(40), { message: "Invalid donation type" }),
 });
 
 /* -------------------------------------------------------------------- auth */
@@ -121,11 +117,7 @@ export const loginBody = z.object({
 // arranged with the organization directly rather than typed into a web form.
 const MAX_DONATION_RUPEES = 500000;
 
-// Must match the options the donate form offers — these three funds are tracked
-// separately in the records, so an unknown value cannot be accepted.
-const DONATION_TYPES = ["zakat", "fitr", "lillah"];
-
-const DONATION_REQUIRED = "Name, mobile and type are required";
+const DONATION_REQUIRED = "Name and mobile are required";
 const INVALID_AMOUNT = "Invalid donation amount";
 
 // Anything that isn't a finite number — "", null, "abc", Infinity, an object —
@@ -149,12 +141,6 @@ export const createOrderBody = z.object({
   mobile: requiredText(DONATION_REQUIRED).refine(isPhone, {
     message: "Enter a valid mobile number",
   }),
-  // Checked case-insensitively but stored as sent, which is how the existing
-  // records read.
-  type: requiredText(DONATION_REQUIRED).refine(
-    (value) => DONATION_TYPES.includes(value.toLowerCase()),
-    { message: "Invalid donation type" }
-  ),
   amount: donationAmount,
 });
 

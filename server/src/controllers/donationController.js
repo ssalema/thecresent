@@ -19,27 +19,25 @@ import {
 /**
  * Step 1: create a Razorpay order and store the pending donation.
  *
- * The route's schema has already required and trimmed the three text fields,
- * checked the mobile number, confirmed the type is one of ours (it reaches the
- * receipt and the admin records) and bounded the amount — see
+ * The route's schema has already required and trimmed the two text fields,
+ * checked the mobile number and bounded the amount — see
  * validation/schemas.js.
  */
 export const createOrder = async (req, res) => {
   try {
-    const { name, mobile, type, amount: amountInRupees } = req.validated.body;
+    const { name, mobile, amount: amountInRupees } = req.validated.body;
 
     const order = await getRazorpay().orders.create({
       amount: Math.round(amountInRupees * 100), // Razorpay works in paise
       currency: "INR",
       receipt: `donation_${Date.now()}`,
-      notes: { name, mobile, type },
+      notes: { name, mobile },
     });
 
     const donation = new Donation({
       name,
       mobile,
       amount: amountInRupees,
-      type,
       razorpayOrderId: order.id,
       status: "created",
     });
@@ -237,7 +235,7 @@ const SEARCH_FIELDS = ["name", "mobile", "razorpayPaymentId"];
  * has no business sitting in a browser's memory.
  */
 const LIST_FIELDS =
-  "name mobile amount type status razorpayOrderId razorpayPaymentId createdAt";
+  "name mobile amount status razorpayOrderId razorpayPaymentId createdAt";
 
 /**
  * GET /api/donations — admin, paginated.
@@ -248,13 +246,12 @@ const LIST_FIELDS =
  */
 export const getDonations = async (req, res) => {
   try {
-    const { search, type, from, to, sort } = req.validated.query;
+    const { search, from, to, sort } = req.validated.query;
     const { page, limit, skip } = pageParams(req.validated.query);
 
     // Only successful payments belong in the admin records.
     const filter = compactFilter(
       { status: "paid" },
-      type ? { type } : undefined,
       dateRangeFilter(from, to),
       searchFilter(search, SEARCH_FIELDS)
     );
@@ -283,23 +280,5 @@ export const getDonations = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch donations" });
-  }
-};
-
-/**
- * GET /api/donations/types — admin.
- *
- * The type filter's options. Read off the records rather than the current form,
- * so a fund that has been retired from the donate page stays filterable. This
- * was derived in the browser from the full donation list; with that list now
- * paginated, the distinct values have to come from the collection itself.
- */
-export const getDonationTypes = async (req, res) => {
-  try {
-    const types = await Donation.distinct("type", { status: "paid" });
-    res.json(types.filter(Boolean).sort((a, b) => a.localeCompare(b)));
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch donation types" });
   }
 };

@@ -267,14 +267,13 @@ const DONATION_COLUMNS = [
   { key: 'name', label: 'Donor', width: '70%' },
   { key: 'mobile', label: 'Mobile', width: '80%' },
   { key: 'amount', label: 'Amount', width: '60%' },
-  { key: 'type', label: 'Type', variant: 'badge' },
   { key: 'date', label: 'Date', width: '85%' },
   { key: 'payment', label: 'Payment ID', width: '90%' },
   { key: 'actions', label: 'Actions', className: 'w-32', variant: 'actions', width: 2 },
 ];
 
 export const DonationListSkeleton = () => (
-  <DataListSkeleton columns={DONATION_COLUMNS} lines={4} />
+  <DataListSkeleton columns={DONATION_COLUMNS} lines={3} />
 );
 
 /* ------------------------------------------------------------------- forms */

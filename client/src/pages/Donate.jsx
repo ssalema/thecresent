@@ -13,7 +13,6 @@ import {
   FaHeartbeat,
   FaLock,
   FaPhoneAlt,
-  FaSeedling,
   FaShieldAlt,
   FaUser,
   FaUsers,
@@ -29,24 +28,11 @@ import {
 } from "../components/ui/tokens";
 import { useOrganization } from "../context/OrganizationContext";
 import api, { apiErrorMessage } from "../lib/api";
-// The list of funds, the preset amounts and the short explainer shown once a
-// fund is chosen live with the schema, so the options offered and the options
-// accepted cannot drift.
-import {
-  DONATION_PRESETS,
-  DONATION_TYPES,
-  donationDefaults,
-  donationSchema,
-} from "../lib/schemas";
+// The preset amounts live with the schema, so the options offered and the
+// options accepted cannot drift.
+import { DONATION_PRESETS, donationDefaults, donationSchema } from "../lib/schemas";
 
 const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
-
-/** The icon each fund is shown with, keyed by the schema's `value`. */
-const TYPE_ICONS = {
-  zakat: FaHandHoldingUsd,
-  fitr: FaSeedling,
-  lillah: FaHeart,
-};
 
 /** The three promises made in the hero, under the headline. */
 const HERO_PROMISES = [
@@ -93,9 +79,9 @@ const GROUP_LABEL =
   "mb-3 block text-xs font-semibold uppercase tracking-wider text-gray-500";
 
 /**
- * The shared look of the fund chips and the amount chips: a control at the same
- * height as an Input, reading as unselected until it takes the blue outline and
- * tint the rest of the site uses for a chosen thing.
+ * The look of the amount chips: a control at the same height as an Input,
+ * reading as unselected until it takes the blue outline and tint the rest of
+ * the site uses for a chosen thing.
  */
 const chipClass = (active) =>
   [
@@ -169,10 +155,6 @@ const Donate = () => {
   // ours below, so the box stays registered and is still focusable from "Other".
   const amountField = filtered("amount", /\D/g);
 
-  const selectedTypeValue = watch("type");
-  const selectedType = DONATION_TYPES.find(
-    (item) => item.value === selectedTypeValue
-  );
   const amount = watch("amount");
 
   // "Other" is not a value of its own — it is the state of holding an amount
@@ -185,9 +167,6 @@ const Donate = () => {
    * press must not be able to raise an error on a field the visitor has not
    * finished with.
    */
-  const chooseType = (value) =>
-    setValue("type", value, { shouldValidate: Boolean(errors.type) });
-
   const choosePreset = (preset) =>
     setValue("amount", String(preset), { shouldValidate: Boolean(errors.amount) });
 
@@ -218,15 +197,12 @@ const Donate = () => {
         currency: order.currency,
         name: organizationName,
         image: logo?.url || undefined,
-        description: `${form.type} Donation`,
+        description: "Donation",
         order_id: order.orderId,
         prefill: { name: form.name, contact: form.mobile },
         // The API has no field for the donor's message, so it rides along on
         // the payment as a gateway note rather than being quietly dropped.
-        notes: {
-          type: form.type,
-          ...(form.message ? { message: form.message } : {}),
-        },
+        notes: form.message ? { message: form.message } : {},
         theme: { color: "#2563eb" },
         handler: async (response) => {
           // 3. Verify the signature on the server
@@ -354,57 +330,6 @@ const Donate = () => {
             noValidate
             className="mt-8 space-y-7"
           >
-            {/* --------------------------------------------- donation type */}
-            <fieldset>
-              <legend className={GROUP_LABEL}>Donation Type</legend>
-
-              {/* The value lives in the form; the chips are its control. */}
-              <input type="hidden" {...register("type")} />
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {DONATION_TYPES.map((item) => {
-                  const Icon = TYPE_ICONS[item.value];
-                  const active = selectedTypeValue === item.value;
-
-                  return (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => chooseType(item.value)}
-                      aria-pressed={active}
-                      className={chipClass(active)}
-                    >
-                      {Icon && (
-                        <Icon
-                          className={active ? "text-blue-600" : "text-gray-500"}
-                          aria-hidden="true"
-                        />
-                      )}
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {errors.type ? (
-                <p className={ERROR_TEXT} role="alert">
-                  {errors.type.message}
-                </p>
-              ) : (
-                selectedType && (
-                  // Zakat, Fitr and Lillah are three different obligations held
-                  // in three separate funds, so the gist stays on the page —
-                  // the choice above it has to be an informed one.
-                  <p className="mt-2.5 text-sm leading-relaxed text-gray-500">
-                    <span className="font-semibold text-gray-700">
-                      {selectedType.label}:
-                    </span>{" "}
-                    {selectedType.gist}
-                  </p>
-                )
-              )}
-            </fieldset>
-
             {/* ----------------------------------------------- your details */}
             <fieldset>
               <legend className={GROUP_LABEL}>Your Details</legend>

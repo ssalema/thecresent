@@ -14,8 +14,8 @@ import { controlClass, FOCUS_RING_TIGHT, LABEL, TRANSITION } from './ui/tokens';
  *     <FilterField label="Search Donor">
  *       <FilterInput placeholder="Name / Mobile" ... />
  *     </FilterField>
- *     <FilterField label="Type">
- *       <FilterSelect ...>...</FilterSelect>
+ *     <FilterField label="Date">
+ *       <FilterSelect ...><PeriodOptions /></FilterSelect>
  *     </FilterField>
  *   </FilterBar>
  *
