@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    Placeholder only. The page title and favicon come from Organization
+    Settings and are applied at runtime by <OrganizationHead />. No static icon
+    is shipped — the tag pointing at one that does not exist only bought a 404
+    on every page load.
+  -->
+  <title>Admin Panel</title>
+
+  <!--
+    Inter, loaded here rather than with @import in index.css — an @import cannot
+    start downloading until the stylesheet has arrived and been parsed, which
+    puts the font two round trips behind first paint.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+</html>

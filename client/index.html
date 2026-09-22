@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    Placeholder only. The page title, SEO meta tags and favicon all come from
+    Organization Settings and are applied at runtime by <OrganizationHead />.
+    No static icon is shipped: a bundled mark would be one organization's
+    branding, and the tag pointing at one that does not exist only bought a 404
+    on every page load.
+
+    `vite build` also bakes those same values in here, so link-preview scrapers
+    that never run the bundle still see them — see plugins/organizationMeta.js.
+    This title survives only when that fetch fails.
+  -->
+  <title>Loading…</title>
+
+  <!--
+    Inter, loaded here rather than with @import in index.css. An @import inside
+    the stylesheet cannot even start downloading until the stylesheet itself has
+    arrived and been parsed, which puts the font request two round trips behind
+    first paint. Preconnecting warms the TLS handshake in parallel, and
+    `display=swap` paints text in the fallback face immediately instead of
+    holding it invisible while the font loads.
+
+    Caveat rides along in the same request. It is the handwritten accent the
+    home page sets over its hero and call-to-action photographs, and one
+    combined css2 URL costs the same round trip as asking for Inter alone.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+  />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+</html>

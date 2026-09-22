@@ -1,0 +1,97 @@
+/* Inter (weights 400–800) is loaded from public/index.html, not @import'ed
+   here — see the comment there. Headings and buttons use 600/700, so those
+   weights have to be loaded, otherwise the browser fakes them and the type
+   looks smudged. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply text-gray-800;
+}
+
+/* Flipkart-style carousel progress bar */
+@keyframes progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.progress-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: progress-shimmer 1.6s ease-in-out infinite;
+}
+
+/* The home page's gallery rail: one row of photographs drifting left for ever.
+   The track holds the same list twice, so translating it half its own width
+   lands exactly on the copy and the loop has no seam. Duration is set per
+   instance, from the number of photographs, so the speed is constant however
+   many the admin has published. */
+@keyframes marquee-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-rail {
+  overflow: hidden;
+}
+
+.marquee-track {
+  animation: marquee-drift var(--marquee-duration, 40s) linear infinite;
+}
+
+/* Held still under the pointer, and while anything on the rail has focus, so a
+   photograph can always be caught and opened. */
+.marquee-track:hover,
+.marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+/* Transitions and entrance animations on the site are decorative — none of them
+   carry meaning — so honour a reduced-motion preference and drop them. This
+   covers the carousel shimmer above along with everything else. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .progress-shimmer::after {
+    animation: none;
+  }
+
+  /* The gallery rail stops drifting rather than snapping to the end of its
+     travel, and becomes a strip the visitor scrolls themselves — otherwise the
+     photographs past the fold would be unreachable. */
+  .marquee-track {
+    animation: none;
+  }
+
+  .marquee-rail {
+    overflow-x: auto;
+  }
+}

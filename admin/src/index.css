@@ -1,0 +1,28 @@
+/* Inter (weights 400–700) is loaded from public/index.html, not @import'ed
+   here — see the comment there. The panel leans on 600/700 for headings and
+   buttons, so those weights have to be loaded, otherwise the browser fakes
+   them and the type looks smudged. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply bg-gray-50 text-gray-800;
+}
+
+/* Every transition and dialog entrance in the panel is decorative — none of
+   them carry meaning — so honour a reduced-motion preference and drop them. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
